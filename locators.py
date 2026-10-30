@@ -34,7 +34,7 @@ class RegisterPageLocators:
     BTN_REGISTER = ("xpath", "//button[contains(text(), 'Зарегистрироваться')]")
     # Текст ошибки «Некорректный пароль»
     ERROR_PASSWORD = ("xpath", "//p[contains(text(), 'Некорректный пароль')]")
-
+    LINK_LOGIN = ("xpath", "//a[contains(@href, '/login')]")
 
 # Локаторы личного кабинета
 class PersonalCabinetLocators:
@@ -50,9 +50,10 @@ class PersonalCabinetLocators:
 
 # Локаторы разделов конструктора
 class ConstructorLocators:
-    # Вкладка «Булки»
-    TAB_BUN = ("xpath", "//span[contains(text(), 'Булки')]")
-    # Вкладка «Соусы»
-    TAB_SAUCE = ("xpath", "//span[contains(text(), 'Соусы')]")
-    # Вкладка «Начинки»
-    TAB_FILLING = ("xpath", "//span[contains(text(), 'Начинки')]")
+    # Вкладки разделов конструктора
+    TAB_BUN = ("xpath", "//span[text()='Булки']")
+    TAB_SAUCE = ("xpath", "//span[text()='Соусы']")
+    TAB_FILLING = ("xpath", "//span[text()='Начинки']")
+
+    # Активная вкладка конструктора (после клика класс меняется на tab_type_current)
+    ACTIVE_TAB = ("xpath", "//div[contains(@class, 'tab_type_current')]")
