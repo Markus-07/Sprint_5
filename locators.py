@@ -1,0 +1,65 @@
+# Локаторы главной страницы
+class MainPageLocators:
+    # Кнопка «Войти в аккаунт» на главной
+    BTN_LOGIN_ACCOUNT = ("xpath", "//button[contains(text(), 'Войти в аккаунт')]")
+    # Кнопка «Личный кабинет» в шапке
+    LINK_PERSONAL_CABINET = ("xpath", "//a[contains(@href, '/account')]")
+
+
+# Локаторы страницы входа
+# Локаторы страницы входа
+# Локаторы страницы входа
+# Локаторы страницы входа
+class LoginPageLocators:
+    # Поле Email (input — соседний элемент лейбла с текстом «Email»)
+    INPUT_EMAIL = ("xpath", "//label[text()='Email']/following-sibling::input")
+    # Поле Пароль
+    INPUT_PASSWORD = ("xpath", "//label[text()='Пароль']/following-sibling::input")
+    # Кнопка «Войти»
+    BTN_LOGIN = ("xpath", "//button[contains(text(), 'Войти')]")
+    # Ссылка «Зарегистрироваться» на странице входа
+    LINK_REGISTER = ("xpath", "//a[contains(@href, '/register')]")
+    # Ссылка «Восстановить пароль»
+    LINK_RECOVERY = ("xpath", "//a[contains(@href, '/forgot-password')] | //a[contains(text(), 'Восстановить пароль')]")
+    # Ссылка «Войти» на странице восстановления пароля
+    LINK_LOGIN_FROM_RECOVERY = ("xpath", "//a[contains(@href, '/login')]")
+
+
+# Локаторы страницы регистрации
+class RegisterPageLocators:
+    # Поле Имя
+    INPUT_NAME = ("xpath", "//label[text()='Имя']/following-sibling::input")
+    # Поле Email
+    INPUT_EMAIL = ("xpath", "//label[text()='Email']/following-sibling::input")
+    # Поле Пароль
+    INPUT_PASSWORD = ("xpath", "//label[text()='Пароль']/following-sibling::input")
+    # Кнопка «Зарегистрироваться»
+    BTN_REGISTER = ("xpath", "//button[contains(text(), 'Зарегистрироваться')]")
+    # Текст ошибки «Некорректный пароль»
+    ERROR_PASSWORD = ("xpath", "//p[contains(text(), 'Некорректный пароль')]")
+    # Ссылка «Войти» на странице регистрации
+    LINK_LOGIN = ("xpath", "//a[contains(@href, '/login')]")
+
+
+
+# Локаторы личного кабинета
+class PersonalCabinetLocators:
+    # Кнопка «Выход»
+    BTN_LOGOUT = ("xpath", "//button[contains(text(), 'Выход')] | //button[contains(text(), 'Выйти')]")
+    # Кнопка «Конструктор»
+        # Кнопка «Конструктор» (текст лежит в дочернем <p>, поэтому ищем по всему содержимому ссылки)
+    LINK_CONSTRUCTOR = ("xpath", "//a[contains(., 'Конструктор')]")
+
+    # Логотип Stellar Burgers в шапке
+    IMG_LOGO = ("xpath", "//a[contains(@class, 'header__logo')] | //div[contains(@class, 'logo')]")
+
+
+# Локаторы разделов конструктора
+class ConstructorLocators:
+    # Вкладки разделов конструктора
+    TAB_BUN = ("xpath", "//span[text()='Булки']")
+    TAB_SAUCE = ("xpath", "//span[text()='Соусы']")
+    TAB_FILLING = ("xpath", "//span[text()='Начинки']")
+
+    # Активная вкладка конструктора (после клика класс меняется на tab_type_current)
+    ACTIVE_TAB = ("xpath", "//div[contains(@class, 'tab_type_current')]")
