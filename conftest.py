@@ -23,10 +23,12 @@ def generate_password(length=7):
 @pytest.fixture(scope="function")
 def driver():
     options = Options()
+    options.add_argument("--start-maximized")  # окно сразу максимальное
     driver = webdriver.Chrome(options=options)
-    driver.maximize_window()
+    driver.set_page_load_timeout(30)  # страница не должна грузиться дольше 30 секунд
     yield driver
     driver.quit()
+
 
 
 # Фикстура с уникальными данными для регистрации

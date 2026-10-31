@@ -7,34 +7,40 @@ class MainPageLocators:
 
 
 # Локаторы страницы входа
+# Локаторы страницы входа
+# Локаторы страницы входа
+# Локаторы страницы входа
 class LoginPageLocators:
-    # Поле Email
-    INPUT_EMAIL = ("xpath", "(//label[text()='Email']/following::input)[1]")
+    # Поле Email (input — соседний элемент лейбла с текстом «Email»)
+    INPUT_EMAIL = ("xpath", "//label[text()='Email']/following-sibling::input")
     # Поле Пароль
-    INPUT_PASSWORD = ("xpath", "(//label[text()='Пароль']/following::input)[1]")
+    INPUT_PASSWORD = ("xpath", "//label[text()='Пароль']/following-sibling::input")
     # Кнопка «Войти»
     BTN_LOGIN = ("xpath", "//button[contains(text(), 'Войти')]")
     # Ссылка «Зарегистрироваться» на странице входа
     LINK_REGISTER = ("xpath", "//a[contains(@href, '/register')]")
     # Ссылка «Восстановить пароль»
     LINK_RECOVERY = ("xpath", "//a[contains(@href, '/forgot-password')] | //a[contains(text(), 'Восстановить пароль')]")
-        # Ссылка «Войти» на странице восстановления пароля
+    # Ссылка «Войти» на странице восстановления пароля
     LINK_LOGIN_FROM_RECOVERY = ("xpath", "//a[contains(@href, '/login')]")
 
 
 # Локаторы страницы регистрации
 class RegisterPageLocators:
     # Поле Имя
-    INPUT_NAME = ("xpath", "(//label[text()='Имя']/following::input)[1]")
+    INPUT_NAME = ("xpath", "//label[text()='Имя']/following-sibling::input")
     # Поле Email
-    INPUT_EMAIL = ("xpath", "(//label[text()='Email']/following::input)[1]")
+    INPUT_EMAIL = ("xpath", "//label[text()='Email']/following-sibling::input")
     # Поле Пароль
-    INPUT_PASSWORD = ("xpath", "(//label[text()='Пароль']/following::input)[1]")
+    INPUT_PASSWORD = ("xpath", "//label[text()='Пароль']/following-sibling::input")
     # Кнопка «Зарегистрироваться»
     BTN_REGISTER = ("xpath", "//button[contains(text(), 'Зарегистрироваться')]")
     # Текст ошибки «Некорректный пароль»
     ERROR_PASSWORD = ("xpath", "//p[contains(text(), 'Некорректный пароль')]")
+    # Ссылка «Войти» на странице регистрации
     LINK_LOGIN = ("xpath", "//a[contains(@href, '/login')]")
+
+
 
 # Локаторы личного кабинета
 class PersonalCabinetLocators:

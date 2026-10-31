@@ -17,7 +17,7 @@ from locators import (
 )
 
 BASE_URL = "https://qa-stellarburgers.education-services.ru/"
-WAIT_TIME = 20
+WAIT_TIME = 10
 
 
 def wait_clickable(driver, locator):
@@ -62,6 +62,23 @@ def login_user(driver, credentials):
             continue
 
 
+def go_to_cabinet(driver):
+    """Вспомогательная функция: после входа переходим в личный кабинет"""
+    # Сначала дожидаемся загрузки главной страницы — значит логин прошёл
+    wait_visible(driver, ConstructorLocators.TAB_BUN)
+    wait_clickable(driver, MainPageLocators.LINK_PERSONAL_CABINET).click()
+    wait_visible(driver, PersonalCabinetLocators.BTN_LOGOUT)
+
+
+def click_tab(driver, tab_locator):
+    """Кликает по вкладке раздела, обходя перекрытие слоем страницы"""
+    tab = wait_visible(driver, tab_locator)
+    try:
+        tab.click()
+    except ElementClickInterceptedException:
+        # вкладку перекрывает контейнер страницы — кликаем напрямую через JS
+        driver.execute_script("arguments[0].click();", tab)
+
 
 class TestRegistration:
     def test_successful_registration(self, driver, unique_credentials):
@@ -85,13 +102,6 @@ class TestRegistration:
 
 
 class TestLogin:
-    def _go_to_cabinet(self, driver):
-        """Вспомогательный метод: после входа переходим в личный кабинет"""
-        # Сначала дожидаемся загрузки главной страницы — значит логин прошёл
-        wait_visible(driver, ConstructorLocators.TAB_BUN)
-        wait_clickable(driver, MainPageLocators.LINK_PERSONAL_CABINET).click()
-        wait_visible(driver, PersonalCabinetLocators.BTN_LOGOUT)
-
     def test_login_by_button_on_main_page(self, driver, unique_credentials):
         """Вход по кнопке «Войти в аккаунт» на главной"""
         register_user(driver, unique_credentials)
@@ -99,7 +109,7 @@ class TestLogin:
         wait_clickable(driver, MainPageLocators.BTN_LOGIN_ACCOUNT).click()
         login_user(driver, unique_credentials)
 
-        self._go_to_cabinet(driver)
+        go_to_cabinet(driver)
         assert "/account" in driver.current_url
 
     def test_login_via_personal_cabinet(self, driver, unique_credentials):
@@ -109,9 +119,8 @@ class TestLogin:
         wait_clickable(driver, MainPageLocators.LINK_PERSONAL_CABINET).click()
         login_user(driver, unique_credentials)
 
-        self._go_to_cabinet(driver)
+        go_to_cabinet(driver)
         assert "/account" in driver.current_url
-
 
     def test_login_from_register_form(self, driver, unique_credentials):
         """Вход через кнопку «Войти» в форме регистрации"""
@@ -124,9 +133,8 @@ class TestLogin:
 
         # Оказались на форме входа — входим
         login_user(driver, unique_credentials)
-        self._go_to_cabinet(driver)
+        go_to_cabinet(driver)
         assert "/account" in driver.current_url
-
 
     def test_login_from_password_recovery_form(self, driver, unique_credentials):
         """Вход через кнопку в форме восстановления пароля"""
@@ -140,7 +148,7 @@ class TestLogin:
         wait_clickable(driver, LoginPageLocators.LINK_LOGIN_FROM_RECOVERY).click()
         login_user(driver, unique_credentials)
 
-        self._go_to_cabinet(driver)
+        go_to_cabinet(driver)
         assert "/account" in driver.current_url
 
 
@@ -162,8 +170,7 @@ class TestPersonalCabinet:
         login_user(driver, unique_credentials)
 
         # После входа попали на главную — снова идём в личный кабинет
-        self._go_to_cabinet = TestLogin()._go_to_cabinet
-        self._go_to_cabinet(driver)
+        go_to_cabinet(driver)
         assert "/account" in driver.current_url
 
     def test_navigate_from_cabinet_to_constructor_by_button(self, driver, unique_credentials):
@@ -193,38 +200,43 @@ class TestPersonalCabinet:
         assert "/login" in driver.current_url
 
 
-
 class TestConstructorSections:
-
-    def _check_section(self, driver, tab_locator, section_name):
-        """Вспомогательный метод: кликает по вкладке и проверяет, что она стала активной"""
-        # После регистрации сайт перебрасывает на /login — открываем главную с конструктором
-        driver.get(BASE_URL)
-        tab = wait_visible(driver, tab_locator)
-        try:
-            tab.click()
-        except ElementClickInterceptedException:
-            # вкладку перекрывает контейнер страницы — кликаем напрямую через JS
-            driver.execute_script("arguments[0].click();", tab)
-        active_tab = wait_visible(driver, ConstructorLocators.ACTIVE_TAB)
-        assert section_name in active_tab.text, (
-            f"Ожидалась активная вкладка «{section_name}», "
-            f"активна вкладка «{active_tab.text}»"
-        )
-
-
 
     def test_navigate_to_buns_section(self, driver, unique_credentials):
         """Переход к разделу «Булки»"""
         register_user(driver, unique_credentials)
-        self._check_section(driver, ConstructorLocators.TAB_BUN, "Булки")
+        driver.get(BASE_URL)
+        # «Булки» выбраны при открытии страницы — сначала переключаемся на «Соусы»
+        click_tab(driver, ConstructorLocators.TAB_SAUCE)
+        WebDriverWait(driver, WAIT_TIME).until(
+            EC.text_to_be_present_in_element(ConstructorLocators.ACTIVE_TAB, "Соусы")
+        )
+        # Теперь кликаем «Булки» — если клик не сработает, тест это покажет
+        click_tab(driver, ConstructorLocators.TAB_BUN)
+        WebDriverWait(driver, WAIT_TIME).until(
+            EC.text_to_be_present_in_element(ConstructorLocators.ACTIVE_TAB, "Булки")
+        )
+        active_tab = driver.find_element(*ConstructorLocators.ACTIVE_TAB)
+        assert "Булки" in active_tab.text
 
     def test_navigate_to_sauces_section(self, driver, unique_credentials):
         """Переход к разделу «Соусы»"""
         register_user(driver, unique_credentials)
-        self._check_section(driver, ConstructorLocators.TAB_SAUCE, "Соусы")
+        driver.get(BASE_URL)
+        click_tab(driver, ConstructorLocators.TAB_SAUCE)
+        WebDriverWait(driver, WAIT_TIME).until(
+            EC.text_to_be_present_in_element(ConstructorLocators.ACTIVE_TAB, "Соусы")
+        )
+        active_tab = driver.find_element(*ConstructorLocators.ACTIVE_TAB)
+        assert "Соусы" in active_tab.text
 
     def test_navigate_to_fillings_section(self, driver, unique_credentials):
         """Переход к разделу «Начинки»"""
         register_user(driver, unique_credentials)
-        self._check_section(driver, ConstructorLocators.TAB_FILLING, "Начинки")
+        driver.get(BASE_URL)
+        click_tab(driver, ConstructorLocators.TAB_FILLING)
+        WebDriverWait(driver, WAIT_TIME).until(
+            EC.text_to_be_present_in_element(ConstructorLocators.ACTIVE_TAB, "Начинки")
+        )
+        active_tab = driver.find_element(*ConstructorLocators.ACTIVE_TAB)
+        assert "Начинки" in active_tab.text
